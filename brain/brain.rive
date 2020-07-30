@@ -16,10 +16,10 @@
 - Please enter your login ID {topic=login}
 
 + 3
-- Please enter you order number
+- Please enter you order number {topic=order_status}
 
 + 4
--Please enter you order number
+-Please enter you order number {topic=order_cancel}
 
 + 5
 - Type your questions here {topic=message}
@@ -28,7 +28,8 @@
 
 > topic login
 + *
--<set username=<star>><call>checkID <star></call>
+*<set username=<star>><call>checkID <star></call> == True => Select the item you want. <call>getNew</call> {topic=select_item}
+*<set username=<star>><call>checkID <star></call> == False => "Please enter your id again." {topic=login}
 < topic
 
 > topic message
@@ -39,19 +40,64 @@
 + *
 -Sorry, I don't have an answer for that.
 
+
+>topic select_item
++#
+-<get user> <call>add_order <star></call>
+<topic
+
+>topic order_status
++#
+-<call>order_status <star></call>
+<topic
+
+
+>topic order_cancel
++#
+-<call>order_cancel <star></call>
+<topic
+
+> object add_order python
+  import database
+  add=database.add_order(str(args[0])) 
+  return add
+  < object
+
+> object order_status python
+  import database
+  check=database.get_order(str(args[0]))
+  return check
+< object
+
+
+
+> object order_cancel python
+  import database
+  delete=database.delete_order(str(args[0]))
+  return "deleted"
+< object
+
+
+
+
+
+
 > object getNew python
   import database
   items = database.getNew()
-  return items
+  for i in items:
+     print( i['name'] +"  :  " + str(i['item_id']) ) 
+     
+  
 < object
 
 > object checkID python
   import database
   user=database.checkID(str(args[0]))
   if user:
-    return "How would you like to pay?"
+    return True
   else:
-    return "You need to register first. Enter your id and password. {topic=register}"
+    return False
 < object
 
 > object savemsg python
