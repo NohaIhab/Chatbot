@@ -24,6 +24,7 @@ def savemsg(msg):
     qry = "INSERT INTO `inquiry` (msg) VALUES('{}')".format(msg)
     cur.execute(qry)
     conn.commit()
+    return 0
     
 def reg_user(userid,userpass):
     cur=conn.cursor(dictionary=True)
@@ -39,6 +40,10 @@ def add_order(itm):
     qry = "INSERT INTO `orders` (order_id,item_id) VALUES('{}','{}')".format(ordr,int(itm))
     cur.execute(qry)
     conn.commit()
+    qry="SELECT * FROM `orders` WHERE `order_id`= '{}'".format(ordr)
+    cur.execute(qry)
+    getordr = cur.fetchone()
+    return getordr
 
 
 
@@ -48,6 +53,7 @@ def get_order(ordr):
     qry="SELECT * FROM `orders` WHERE `order_id`= '{}'".format(ordr)
     cur.execute(qry)
     getordr = cur.fetchone()
+    
     return getordr  
 
 def delete_order(ordr):
